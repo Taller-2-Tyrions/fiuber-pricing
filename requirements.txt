@@ -6,3 +6,4 @@ pymongo
 http3
 requests
 python-dotenv
+mongomock

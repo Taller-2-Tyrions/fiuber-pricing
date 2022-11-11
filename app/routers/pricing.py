@@ -44,5 +44,3 @@ def get_voyages_info(voyage: VoyageBase, near_drivers: List[DriverBase],
                 }, status_code=400)
 
     return prices
-
-

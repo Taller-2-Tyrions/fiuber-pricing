@@ -5,8 +5,6 @@ from fastapi.exceptions import HTTPException
 
 from datetime import datetime, time
 
-from app.crud import voyages
-from ..schemas.pricing import PriceRequest
 from ..schemas.pricing import VoyageBase, DriverBase
 from ..database.mongo import db
 
@@ -105,12 +103,10 @@ def get_price_voyage(voyage: VoyageBase, constants):
     return price
 
 
-def get_time_await(driver, init):
+def get_time_await(driver, init, constants):
     location = driver.get("location")
-    location = Point(latitude=location.get("latitude"),
-                     longitude=location.get("longitude"))
-    price = time_to(location, init)*PRICE_PER_MINUTE
-    price += distance_to(location, init)*PRICE_PER_METER
+    price = time_to(location, init) * constants.get("price_minute")
+    price += distance_to(location, init) * constants.get("price_meter")
 
     return price
 
@@ -119,8 +115,8 @@ def price_voyage(voyage: VoyageBase, driver: DriverBase):
     constants = find_all_constants(db)
     price_voyage = get_price_voyage(voyage, constants)
     price_driver = get_price_driver(driver, constants)
-    price_client = get_price_client(voyage.passenger_id)
-    price_time_await = get_time_await(driver, voyage.init)
+    price_client = get_price_client(voyage.passenger)
+    price_time_await = get_time_await(driver, voyage.init, constants)
 
     total_price = price_voyage + price_driver + price_client + price_time_await
 
@@ -133,4 +129,3 @@ def price_voyage(voyage: VoyageBase, driver: DriverBase):
 def add_vip_price(price):
     constants = find_all_constants(db)
     return price * constants.get("price_vip")
-
