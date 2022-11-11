@@ -44,9 +44,13 @@ def distance_to(_origin_point, _dest_point):
     origin_point = str(_origin_point.latitude)+','+str(_origin_point.longitude)
     dest_point = str(_dest_point.latitude)+','+str(_dest_point.longitude)
 
+    url = GOOGLE_MAPS_URL+"?origins=" + origin_point + "&destinations="
+    url += dest_point + "&unit=km;key=" + GOOGLE_MAPS_API_KEY
+
     resp = requests.get(GOOGLE_MAPS_URL+"?origins=" + origin_point +
                         "&destinations=" + dest_point +
                         "&unit=km&key=" + GOOGLE_MAPS_API_KEY)
+
     if (not is_status_correct(resp.status_code)):
         print("Error in Google Maps Services: pricing::distance_to")
         raise HTTPException(detail={
@@ -54,13 +58,46 @@ def distance_to(_origin_point, _dest_point):
                 }, status_code=500)
 
     resp_json = resp.json()
+
+    print(resp_json['rows'][0]['elements'][0])
+
+    if resp_json['rows'][0]['elements'][0].get("status") == 'ZERO_RESULTS':
+        raise Exception("Path Not Found In Google Maps. "
+                        "Make sure these are valid points")
+
     distance_in_mts = resp_json['rows'][0]['elements'][0]['distance']['value']
 
     return distance_in_mts
 
 
-def time_to(point_a, point_b):
-    return distance_to(point_a, point_b)*0.1
+def time_to(_origin_point, _dest_point):
+    origin_point = str(_origin_point.latitude)+','+str(_origin_point.longitude)
+    dest_point = str(_dest_point.latitude)+','+str(_dest_point.longitude)
+
+    url = GOOGLE_MAPS_URL+"?origins=" + origin_point + "&destinations="
+    url += dest_point + "&unit=km;key=" + GOOGLE_MAPS_API_KEY
+
+    resp = requests.get(GOOGLE_MAPS_URL+"?origins=" + origin_point +
+                        "&destinations=" + dest_point +
+                        "&unit=km&key=" + GOOGLE_MAPS_API_KEY)
+
+    if (not is_status_correct(resp.status_code)):
+        print("Error in Google Maps Services: pricing::duration_to")
+        raise HTTPException(detail={
+                    'message': resp.reason
+                }, status_code=500)
+
+    resp_json = resp.json()
+
+    print(resp_json['rows'][0]['elements'][0])
+
+    if resp_json['rows'][0]['elements'][0].get("status") == 'ZERO_RESULTS':
+        raise Exception("Path Not Found In Google Maps. "
+                        "Make sure these are valid points")
+
+    distance_in_mts = resp_json['rows'][0]['elements'][0]['duration']['value']
+
+    return distance_in_mts
 
 
 def get_price_driver(driver: DriverBase, constants):
@@ -104,7 +141,7 @@ def get_price_voyage(voyage: VoyageBase, constants):
 
 
 def get_time_await(driver, init, constants):
-    location = driver.get("location")
+    location = driver.location
     price = time_to(location, init) * constants.get("price_minute")
     price += distance_to(location, init) * constants.get("price_meter")
 
@@ -114,14 +151,20 @@ def get_time_await(driver, init, constants):
 def price_voyage(voyage: VoyageBase, driver: DriverBase):
     constants = find_all_constants(db)
     price_voyage = get_price_voyage(voyage, constants)
+    print("Viaje!")
     price_driver = get_price_driver(driver, constants)
-    price_client = get_price_client(voyage.passenger)
+    print("Driver!")
+    price_client = get_price_client(voyage.passenger, constants)
+    print("Client!")
     price_time_await = get_time_await(driver, voyage.init, constants)
+    print("Espera!")
 
     total_price = price_voyage + price_driver + price_client + price_time_await
+    print("Sumando")
 
     if is_night():
         total_price *= constants.get("plus_night")
+    print("Noche")
 
     return total_price
 
