@@ -3,8 +3,6 @@ from fastapi.exceptions import HTTPException
 from ..services.pricing import price_voyage, add_vip_price
 from ..schemas.pricing import PriceRequestBase, PriceRequestsBase
 
-from typing import List
-
 
 router = APIRouter(
     prefix="/pricing",
