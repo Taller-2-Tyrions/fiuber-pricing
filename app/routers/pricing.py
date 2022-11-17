@@ -13,7 +13,7 @@ router = APIRouter(
 @router.post("/voyage")
 def get_voyage_info(request: PriceRequestBase):
     try:
-        price = price_voyage(request.voyage, request.driver)
+        price = price_voyage(request.voyage, request.driver, request.passenger)
         print("Calculado")
         if request.voyage.is_vip:
             price = add_vip_price(price)
@@ -30,7 +30,7 @@ def get_voyages_info(request: PriceRequestsBase):
     prices = {}
     try:
         for driver in request.drivers:
-            price = price_voyage(request.voyage, driver)
+            price = price_voyage(request.voyage, driver, request.passenger)
             id = driver.id
             if request.voyage.is_vip:
                 price = add_vip_price(price)

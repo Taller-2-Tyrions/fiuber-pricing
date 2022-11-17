@@ -5,7 +5,7 @@ from fastapi.exceptions import HTTPException
 
 from datetime import datetime, time
 
-from ..schemas.pricing import VoyageBase, DriverBase
+from ..schemas.pricing import VoyageBase, DriverBase, UserBase
 from ..database.mongo import db
 
 from ..crud.constants import find_all_constants
@@ -148,11 +148,11 @@ def get_time_await(driver, init, constants):
     return price
 
 
-def price_voyage(voyage: VoyageBase, driver: DriverBase):
+def price_voyage(voyage: VoyageBase, driver: DriverBase, passenger: UserBase):
     constants = find_all_constants(db)
     price_voyage = get_price_voyage(voyage, constants)
     price_driver = get_price_driver(driver, constants)
-    price_client = get_price_client(voyage.passenger, constants)
+    price_client = get_price_client(passenger, constants)
     price_time_await = get_time_await(driver, voyage.init, constants)
 
     total_price = price_voyage + price_driver + price_client + price_time_await
