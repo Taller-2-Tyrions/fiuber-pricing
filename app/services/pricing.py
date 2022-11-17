@@ -151,20 +151,14 @@ def get_time_await(driver, init, constants):
 def price_voyage(voyage: VoyageBase, driver: DriverBase):
     constants = find_all_constants(db)
     price_voyage = get_price_voyage(voyage, constants)
-    print("Viaje!")
     price_driver = get_price_driver(driver, constants)
-    print("Driver!")
     price_client = get_price_client(voyage.passenger, constants)
-    print("Client!")
     price_time_await = get_time_await(driver, voyage.init, constants)
-    print("Espera!")
 
     total_price = price_voyage + price_driver + price_client + price_time_await
-    print("Sumando")
 
     if is_night():
         total_price *= constants.get("plus_night")
-    print("Noche")
 
     return total_price
 

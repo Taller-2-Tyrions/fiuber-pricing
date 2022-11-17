@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from ..services.pricing import price_voyage, add_vip_price
-from ..schemas.pricing import VoyageBase, DriverBase
+from ..schemas.pricing import PriceRequestBase, PriceRequestsBase
 
 from typing import List
 
@@ -12,13 +12,12 @@ router = APIRouter(
 )
 
 
-@router.post("/voyage/")
-def get_voyage_info(voyage: VoyageBase, driver: DriverBase,
-                    is_vip: bool):
+@router.post("/voyage")
+def get_voyage_info(request: PriceRequestBase):
     try:
-        price = price_voyage(voyage, driver)
+        price = price_voyage(request.voyage, request.driver)
         print("Calculado")
-        if is_vip:
+        if request.voyage.is_vip:
             price = add_vip_price(price)
     except Exception as err:
         raise HTTPException(detail={
@@ -28,15 +27,14 @@ def get_voyage_info(voyage: VoyageBase, driver: DriverBase,
     return price
 
 
-@router.post("/voyages/")
-def get_voyages_info(voyage: VoyageBase, near_drivers: List[DriverBase],
-                     is_vip: bool):
+@router.post("/voyages")
+def get_voyages_info(request: PriceRequestsBase):
     prices = {}
     try:
-        for driver in near_drivers:
-            price = price_voyage(voyage, driver)
+        for driver in request.drivers:
+            price = price_voyage(request.voyage, driver)
             id = driver.id
-            if is_vip:
+            if request.voyage.is_vip:
                 price = add_vip_price(price)
             prices.update({id: price})
     except Exception as err:

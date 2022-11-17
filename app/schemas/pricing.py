@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 
 
 class Point(BaseModel):
@@ -13,7 +14,6 @@ class UserBase(BaseModel):
 
 
 class VoyageBase(BaseModel):
-    passenger: UserBase
     init: Point
     end: Point
     is_vip: bool
@@ -23,6 +23,18 @@ class DriverBase(UserBase):
     id: str
     location: Point
     is_vip: bool
+
+
+class PriceRequestBase(BaseModel):
+    passenger: UserBase
+    voyage: VoyageBase
+    driver: DriverBase
+
+
+class PriceRequestsBase(BaseModel):
+    passenger: UserBase
+    voyage: VoyageBase
+    drivers: List[DriverBase]
 
 
 class ConstantsBase(BaseModel):
