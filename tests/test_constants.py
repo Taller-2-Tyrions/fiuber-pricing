@@ -12,9 +12,7 @@ def test_create_user():
                  "CONSTANTE_2": 20}
     add_all_constants(db, constants)
     all_constants = cst.find_all_constants(db)
-
-    print(all_constants)
-
+    
     assert (all_constants == constants)
 
 

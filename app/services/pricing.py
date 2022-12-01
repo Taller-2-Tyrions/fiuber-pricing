@@ -52,14 +52,11 @@ def distance_to(_origin_point, _dest_point):
                         "&unit=km&key=" + GOOGLE_MAPS_API_KEY)
 
     if (not is_status_correct(resp.status_code)):
-        print("Error in Google Maps Services: pricing::distance_to")
         raise HTTPException(detail={
                     'message': resp.reason
                 }, status_code=500)
 
     resp_json = resp.json()
-
-    print(resp_json['rows'][0]['elements'][0])
 
     if resp_json['rows'][0]['elements'][0].get("status") == 'ZERO_RESULTS':
         raise Exception("Path Not Found In Google Maps. "
@@ -82,14 +79,11 @@ def time_to(_origin_point, _dest_point):
                         "&unit=km&key=" + GOOGLE_MAPS_API_KEY)
 
     if (not is_status_correct(resp.status_code)):
-        print("Error in Google Maps Services: pricing::duration_to")
         raise HTTPException(detail={
                     'message': resp.reason
                 }, status_code=500)
 
     resp_json = resp.json()
-
-    print(resp_json['rows'][0]['elements'][0])
 
     if resp_json['rows'][0]['elements'][0].get("status") == 'ZERO_RESULTS':
         raise Exception("Path Not Found In Google Maps. "

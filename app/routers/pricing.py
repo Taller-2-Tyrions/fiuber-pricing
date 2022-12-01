@@ -14,7 +14,6 @@ router = APIRouter(
 def get_voyage_info(request: PriceRequestBase):
     try:
         price = price_voyage(request.voyage, request.driver, request.passenger)
-        print("Calculado")
         if request.voyage.is_vip:
             price = add_vip_price(price)
     except Exception as err:
