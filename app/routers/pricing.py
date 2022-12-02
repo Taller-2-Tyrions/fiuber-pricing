@@ -30,13 +30,15 @@ def get_voyages_info(request: PriceRequestsBase):
     try:
         for driver in request.drivers:
             price = price_voyage(request.voyage, driver, request.passenger)
+            if price < 0:
+                continue
             id = driver.id
             if request.voyage.is_vip:
                 price = add_vip_price(price)
             prices.update({id: price})
     except Exception as err:
         raise HTTPException(detail={
-                    'message': f"Error Al Cotizar {err}"
-                }, status_code=400)
+                            'message': f"Error Al Cotizar {err}"
+                            }, status_code=400)
 
     return prices
