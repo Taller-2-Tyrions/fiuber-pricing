@@ -14,8 +14,13 @@ router = APIRouter(
 def get_voyage_info(request: PriceRequestBase):
     try:
         price = price_voyage(request.voyage, request.driver, request.passenger)
+
+        if price < 0:
+            raise Exception("Driver Can't Reach Init Point")
+
         if request.voyage.is_vip:
             price = add_vip_price(price)
+
     except Exception as err:
         raise HTTPException(detail={
                     'message': f"Error Al Cotizar {err}"

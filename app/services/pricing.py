@@ -1,7 +1,6 @@
 
 import requests
 import os
-import time as t
 from fastapi.exceptions import HTTPException
 
 from datetime import datetime, time
@@ -47,7 +46,6 @@ def distance_to(_origin_point, _dest_point):
 
     url = GOOGLE_MAPS_URL+"?origins=" + origin_point + "&destinations="
     url += dest_point + "&unit=km;key=" + GOOGLE_MAPS_API_KEY
-    start = t.time()
     resp = requests.get(GOOGLE_MAPS_URL+"?origins=" + origin_point +
                         "&destinations=" + dest_point +
                         "&unit=km&key=" + GOOGLE_MAPS_API_KEY)
@@ -56,11 +54,8 @@ def distance_to(_origin_point, _dest_point):
         raise HTTPException(detail={
                     'message': resp.reason
                 }, status_code=500)
-    end = t.time()
 
     resp_json = resp.json()
-
-    print(f"Respuesta: {resp_json} En {end-start}")
 
     if resp_json['rows'][0]['elements'][0].get("status") == 'ZERO_RESULTS':
         raise Exception("Path Not Found In Google Maps. "
