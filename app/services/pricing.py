@@ -40,6 +40,16 @@ def is_status_correct(status_code):
     return status_code//100 == 2
 
 
+def get_first_decimal(number):
+    aux = number
+    i = 0
+
+    while aux * (10 ** i) < 1:
+        i += 1
+
+    return i
+
+
 def distance_to(_origin_point, _dest_point):
     origin_point = str(_origin_point.latitude)+','+str(_origin_point.longitude)
     dest_point = str(_dest_point.latitude)+','+str(_dest_point.longitude)
@@ -156,7 +166,9 @@ def price_voyage(voyage: VoyageBase, driver: DriverBase, passenger: UserBase):
     if is_night():
         total_price *= constants.get("plus_night")
 
-    return total_price
+    first_decimal = get_first_decimal(total_price)
+
+    return round(total_price, first_decimal+2)
 
 
 def add_vip_price(price):
