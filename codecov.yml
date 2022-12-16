@@ -3,3 +3,5 @@ ignore:
   - "app/routers"
   - "app/firebase_configs.py"
   - "app/main.py"
+  - "app/schemas"
+  - "app/services"
